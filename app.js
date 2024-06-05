@@ -47,19 +47,23 @@ function getImage() {
 
   reader.onload = function (event) {
     const dataUrl = event.target.result;
-
+  
     const imageElement = new Image();
     imageElement.src = dataUrl;
-
+  
     imageElement.onload = function () {
-      image.setAttribute('src', this.src);
-      image.setAttribute('height', this.height);
-      image.setAttribute('width', this.width);
-
-      var dataImage = tf.browser.fromPixels(image)
-      classifyImage(dataImage.reshape(1,150,150,32));
+      // Redimensionner l'image à la taille attendue par le modèle (par exemple, 150x150)
+      const resizedImage = tf.image.resizeBilinear(tf.browser.fromPixels(imageElement), [150, 150]);
+  
+      // Afficher l'image redimensionnée dans l'élément HTML
+      image.setAttribute('src', tf.browser.toPixels(resizedImage).src);
+      image.setAttribute('height', '150');
+      image.setAttribute('width', '150');
+  
+      // Classer l'image redimensionnée
+      classifyImage(resizedImage.reshape([1, 150, 150, 3]));
     };
-
+  
     document.body.classList.add('image-loaded');
   };
 
